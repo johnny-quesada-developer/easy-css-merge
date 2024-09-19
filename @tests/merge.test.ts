@@ -99,5 +99,13 @@ describe('EasyWebWorker', () => {
         )
       ).toBe('2 a c f h i');
     });
+
+    it('should exclude the whole group', () => {
+      expect(merge('a', ['b', 'c', false])).toBe('a');
+    });
+
+    it('should preserve the whole group', () => {
+      expect(merge('a', ['b', 'c', true])).toBe('a b c');
+    });
   });
 });

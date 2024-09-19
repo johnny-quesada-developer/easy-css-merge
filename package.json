@@ -1,6 +1,6 @@
 {
   "name": "easy-css-merge",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Welcome to easy-css-merge - your streamlined solution for effortlessly merging CSS classes in React, Angular, Vue, or any other JavaScript framework. 🚀",
   "main": "lib/bundle.js",
   "types": "lib/index.d.ts",

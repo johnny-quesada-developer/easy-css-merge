@@ -9,7 +9,10 @@ export type MergeFilterPredicate = (
   array: string[]
 ) => boolean;
 
-export type MergeFilter = (() => MergeFilterPredicate) | (() => Excludes[]);
+export type MergeFilter =
+  | (() => MergeFilterPredicate)
+  | (() => Excludes[])
+  | boolean;
 
 type MergeArg = string | Record<string, boolean>;
 
@@ -25,16 +28,21 @@ type MergeArgs =
  * This method modifies the source array by removing the filter function
  */
 const extractFilterIfPresent = (source: [...unknown[], MergeFilter]) => {
-  const hasFilter = typeof source[source.length - 1] === 'function';
+  const sourceType = typeof source[source.length - 1];
+  const hasFilter = sourceType === 'function' || sourceType === 'boolean';
 
   if (!hasFilter) return null;
 
-  const filterSource = (source.pop() as MergeFilter)();
-  const isSimpleExclusion = Array.isArray(filterSource);
+  const filterSource = source.pop() as MergeFilter;
+
+  if (sourceType === 'boolean') return () => filterSource as boolean;
+
+  const filterPredicate = (filterSource as Exclude<MergeFilter, boolean>)();
+  const isSimpleExclusion = Array.isArray(filterPredicate);
 
   return isSimpleExclusion
-    ? (value: string) => !filterSource.includes(value)
-    : filterSource;
+    ? (value: string) => !filterPredicate.includes(value)
+    : filterPredicate;
 };
 
 // [...(MergeArgGroup | [...MergeArgGroup[], MergeFilter])[], MergeFilter | MergeArgGroup]
